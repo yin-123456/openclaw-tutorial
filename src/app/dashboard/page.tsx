@@ -3,60 +3,75 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 const tutorials = [
-  { title: '1. 环境准备', desc: '安装 Node.js 和必要工具', content: '确保系统已安装 Node.js 18+，推荐使用 Ubuntu 22.04 或 Windows 11...' },
-  { title: '2. 安装 OpenClaw', desc: '通过 npm 全局安装', content: '运行 npm install -g openclaw 进行安装...' },
-  { title: '3. 配置 API Key', desc: '设置 Claude API 密钥', content: '获取 Anthropic API Key 并配置到环境变量...' },
-  { title: '4. 启动服务', desc: '运行 Gateway', content: '使用 openclaw gateway start 启动后台服务...' },
-  { title: '5. Skills 配置', desc: '扩展 AI 能力', content: '配置 Skills 让 AI 助手能操作更多工具...' },
-  { title: '6. 多端接入', desc: '连接 Telegram', content: '配置 Telegram Bot 实现随时随地访问...' },
+  { id: 1, title: '环境准备', desc: '安装 Node.js 和必要工具', time: '10 分钟', status: 'available' },
+  { id: 2, title: '安装 OpenClaw', desc: '通过 npm 全局安装', time: '5 分钟', status: 'available' },
+  { id: 3, title: '配置 API Key', desc: '设置 Claude API 密钥', time: '5 分钟', status: 'available' },
+  { id: 4, title: '启动服务', desc: '运行 Gateway 服务', time: '10 分钟', status: 'available' },
+  { id: 5, title: 'Skills 配置', desc: '扩展 AI 能力', time: '15 分钟', status: 'available' },
+  { id: 6, title: '多端接入', desc: '连接 Telegram 等平台', time: '20 分钟', status: 'available' },
 ]
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState('')
   const router = useRouter()
 
   useEffect(() => {
     fetch('/api/check-auth').then(res => {
       if (!res.ok) router.push('/login')
-      else { setLoading(false); setUser('用户') }
+      else setLoading(false)
     })
   }, [router])
 
+  const handleLogout = async () => {
+    await fetch('/api/logout')
+    router.push('/')
+  }
+
   if (loading) return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-      <div className="text-white">加载中...</div>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
-      <nav className="border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg" />
-            <span className="text-white font-semibold">OpenClaw 教程</span>
+    <main className="min-h-screen bg-black text-white">
+      <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/[0.08]">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500" />
+            <span className="font-semibold">教程中心</span>
           </div>
-          <button onClick={() => fetch('/api/logout').then(() => router.push('/'))} className="text-gray-400 hover:text-white text-sm">
-            退出
+          <button onClick={handleLogout} className="text-sm text-zinc-400 hover:text-white transition">
+            退出登录
           </button>
         </div>
       </nav>
-      
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold text-white mb-2">欢迎回来 👋</h1>
-        <p className="text-gray-400 mb-10">开始学习 OpenClaw 部署</p>
-        
-        <div className="space-y-4">
+
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold mb-2">欢迎回来 👋</h1>
+          <p className="text-zinc-400">继续你的学习之旅</p>
+        </div>
+
+        <div className="grid gap-4">
           {tutorials.map((t, i) => (
-            <div key={i} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">{t.title}</h3>
-                  <p className="text-gray-400 text-sm mb-3">{t.desc}</p>
-                  <p className="text-gray-300 text-sm">{t.content}</p>
+            <div key={t.id} className="group p-5 rounded-xl bg-zinc-900/50 border border-white/[0.08] hover:border-indigo-500/50 hover:bg-zinc-900 transition-all cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold">
+                    {t.id}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-0.5">{t.title}</h3>
+                    <p className="text-sm text-zinc-400">{t.desc}</p>
+                  </div>
                 </div>
-                <span className="text-violet-400 text-sm">查看</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs text-zinc-500">{t.time}</span>
+                  <svg className="w-5 h-5 text-zinc-600 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
             </div>
           ))}
